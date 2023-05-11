@@ -3,25 +3,31 @@ import Loader from '../components/Loader'
 import { Link, useNavigate } from 'react-router-dom'
 import { useLoginMutation } from '../redux/api/authorization'
 import ToastNotification from '../components/ToastNotification'
+import { useDispatch } from 'react-redux'
+import { saveData } from '../redux/services/authorizationSlice'
 
 const Login = () => {
   const [user, setUser] = useState({
     email: '',
     password: '',
   })
+  const [saveLogin, setSaveLogin] = useState(false)
   const [login, { isLoading }] = useLoginMutation()
   const [badMail, setBadMail] = useState(false)
   const [loginFailed, setLoginFailed] = useState(false)
   const [connectionError, setConnectionError] = useState(false)
   const navigate = useNavigate()
+  const dispatch = useDispatch()
 
   const onChangeHandler = (e) => {
     setUser({
       ...user,
       [e.target.name]: e.target.value,
     })
+    // mail validation
     if (e.target.name === 'email') {
-      if (mailValidation(e.target.value)) {
+      const format = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/
+      if (e.target.value.match(format)) {
         setBadMail(false)
       } else {
         setBadMail(true)
@@ -29,29 +35,27 @@ const Login = () => {
     }
   }
 
-  const mailValidation = (mailAddr) => {
-    const format = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/
-    if (mailAddr.match(format)) {
-      return true
-    } else {
-      return false
-    }
-  }
-
   const submitHandler = async (e) => {
     e.preventDefault()
-    try {
-      const { data } = await login(user)
-      // try logging in
-      if (!data) {
-        setConnectionError(true)
-      } else if (data?.success) {
-        navigate('/')
-      } else {
-        setLoginFailed(true)
+    if (!badMail) {
+      try {
+        const { data } = await login(user)
+        // try logging in
+        if (!data) {
+          setConnectionError(true)
+        } else if (data?.success) {
+          // if checkbox was selected, save data
+          if (saveLogin) {
+            dispatch(saveData({ user: data?.user, token: data?.token }))
+          }
+          // go to main page if login success
+          navigate('/')
+        } else {
+          setLoginFailed(true)
+        }
+      } catch (error) {
+        console.log(error)
       }
-    } catch (error) {
-      console.log(error)
     }
   }
 
@@ -70,11 +74,14 @@ const Login = () => {
             value={user.email}
             onChange={onChangeHandler}
             required
-            className={` outline-none p-1 border focus:border-b-blue-500 mb-2 ${
+            className={` outline-none p-1 border focus:border-b-blue-500 ${
               badMail && 'border-b-red-500'
             }`}
           />
-          <label htmlFor="password" className="text-sm text-gray-500">
+          {badMail && (
+            <p className="text-red-500 text-xs">Please enter a valid email.</p>
+          )}
+          <label htmlFor="password" className="text-sm text-gray-500 mt-2">
             Password
           </label>
           <input
@@ -86,12 +93,24 @@ const Login = () => {
             required
             className=" outline-none p-1 border focus:border-b-blue-500 mb-2"
           />
+          <div>
+            <input
+              type="checkbox"
+              id="agreement"
+              className=" accent-blue-500"
+              value={saveLogin}
+              onChange={(e) => setSaveLogin(!saveLogin)}
+            />
+            <label htmlFor="agreement" className="text-sm">
+              &nbsp;Remember me on this device.
+            </label>
+          </div>
           <button
             className=" bg-blue-500 py-2 text-center text-white hover:bg-blue-600 mt-5 mb-1 disabled:bg-blue-200"
             type="submit"
             disabled={isLoading && true}
           >
-            {isLoading ? <Loader /> : 'Sign Up'}
+            {isLoading ? <Loader /> : 'Login'}
           </button>
           <div className=" flex text-sm">
             <p>Don't have an account?&nbsp;</p>
@@ -103,13 +122,13 @@ const Login = () => {
       </div>
 
       {loginFailed && (
-        <ToastNotification mode="failedLogin" resetLogin={setLoginFailed} />
+        <ToastNotification mode="failedLogin" closeNotification={setLoginFailed} />
       )}
 
       {connectionError && (
         <ToastNotification
           mode="failedConnection"
-          resetLogin={setConnectionError}
+          closeNotification={setConnectionError}
         />
       )}
     </main>
@@ -124,10 +143,7 @@ export default Login
 1, Login Function
 2. Bad Connection Toast Notification
 3. Bad Login Toast Notification
-
-TO-DO
-4. Add CheckBox With Remember Me on This Device
-  if Checked >> Save Cookies with Token
-
-
+4. CheckBox With Remember Me on This Device
+   if Checked >> Save Cookies with Token and User, available for 7 days
+   if not Checked >> Only one time login
 */

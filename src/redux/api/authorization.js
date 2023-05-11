@@ -15,7 +15,15 @@ export const authorization = createApi({
       }),
       invalidatesTags: ['authorization'],
     }),
+    register: builder.mutation({
+      query: (newUser) => ({
+        url: '/register',
+        method: 'POST',
+        body: newUser,
+      }),
+      invalidatesTags: ['authorization'],
+    }),
   }),
 })
 
-export const { useLoginMutation } = authorization
+export const { useLoginMutation, useRegisterMutation } = authorization
