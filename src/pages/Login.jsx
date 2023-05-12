@@ -4,7 +4,10 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useLoginMutation } from '../redux/api/authorization'
 import ToastNotification from '../components/ToastNotification'
 import { useDispatch } from 'react-redux'
-import { saveData } from '../redux/services/authorizationSlice'
+import {
+  saveUserData,
+  saveLoginData,
+} from '../redux/services/authorizationSlice'
 
 const Login = () => {
   const [user, setUser] = useState({
@@ -12,11 +15,12 @@ const Login = () => {
     password: '',
   })
   const [saveLogin, setSaveLogin] = useState(false)
-  const [login, { isLoading }] = useLoginMutation()
   const [badMail, setBadMail] = useState(false)
   const [loginFailed, setLoginFailed] = useState(false)
   const [connectionError, setConnectionError] = useState(false)
   const navigate = useNavigate()
+
+  const [login, { isLoading }] = useLoginMutation()
   const dispatch = useDispatch()
 
   const onChangeHandler = (e) => {
@@ -45,8 +49,9 @@ const Login = () => {
           setConnectionError(true)
         } else if (data?.success) {
           // if checkbox was selected, save data
+          dispatch(saveUserData({ user: data?.user, token: data?.token }))
           if (saveLogin) {
-            dispatch(saveData({ user: data?.user, token: data?.token }))
+            dispatch(saveLoginData())
           }
           // go to main page if login success
           navigate('/')
@@ -122,7 +127,10 @@ const Login = () => {
       </div>
 
       {loginFailed && (
-        <ToastNotification mode="failedLogin" closeNotification={setLoginFailed} />
+        <ToastNotification
+          mode="failedLogin"
+          closeNotification={setLoginFailed}
+        />
       )}
 
       {connectionError && (

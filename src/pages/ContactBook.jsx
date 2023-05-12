@@ -1,7 +1,8 @@
 import React from 'react'
+import Navbar from '../components/Navbar'
 
 const ContactBook = () => {
-  return (<div>Contact</div>)
+  return <Navbar />
 }
 
 export default ContactBook
