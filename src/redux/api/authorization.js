@@ -31,6 +31,15 @@ export const authorization = createApi({
       }),
       invalidatesTags: ['authorization'],
     }),
+    changePassword: builder.mutation({
+      query: ({ token, password }) => ({
+        url: '/change-password',
+        method: 'POST',
+        headers: { authorization: `Bearer ${token}` },
+        body: password,
+      }),
+      invalidatesTags: ['authorization'],
+    }),
   }),
 })
 
@@ -39,4 +48,5 @@ export const {
   useRegisterMutation,
   useLogoutMutation,
   useGetProfileQuery,
+  useChangePasswordMutation,
 } = authorization

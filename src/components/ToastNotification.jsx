@@ -8,13 +8,19 @@ const ToastNotification = ({ mode, closeNotification }) => {
   useEffect(() => {
     if (mode == 'failedLogin') {
       setHeading('Login Failed')
-      setBodyText('Wrong email or password')
+      setBodyText('Wrong email or password.')
     } else if (mode == 'failedConnection') {
       setHeading('Connection Failed')
       setBodyText('Please try again later')
     } else if (mode === 'registerSuccess') {
       setHeading('Registration Success')
-      setBodyText('Please go to login page')
+      setBodyText('Please go to login page.')
+    } else if (mode === 'passwordChangeSuccess') {
+      setHeading('Password Changed')
+      setBodyText('Please login again.')
+    } else if (mode === 'passwordChangeFailed') {
+      setHeading('Incorrect Password')
+      setBodyText('Please try again.')
     }
   }, [mode])
 
