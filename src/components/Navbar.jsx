@@ -37,9 +37,9 @@ const Navbar = () => {
         onClick={() => setShowMenu(!showMenu)}
       />
       <div
-        className={`absolute flex flex-col gap-2 p-2 text-right bg-white shadow-md w-[200px] h-fit border-t-8 border-t-blue-500 top-20 right-3 transition-opacity ease-in duration-100 ${
-          showMenu ? 'opacity-100' : 'opacity-0'
-        }`}
+        className={`absolute flex flex-col gap-2 p-2 text-right bg-white shadow-md w-[200px] h-fit border-t-8 border-t-blue-500 top-20 right-3 ${
+          !showMenu && 'hidden'
+        } z-10`}
       >
         <h3 className="select-none font-semibold">{user.name}</h3>
         <hr />
@@ -58,19 +58,3 @@ const Navbar = () => {
 }
 
 export default Navbar
-
-// TODO
-/*
-1. GET USER DATA From Auth Slice
-2. Make a setting page - DONE
-3. Make Log Out Function
-    >> Remove Cookies When Logging Out
-4. Make Menu Disappear and Appear with State
-
----------------------------------------------------
-
-1 - WE have to check, if we have a user in Cookie?
-2 - If we don't have cookies, send the client to login page
-2 - Only after login, get the data from state
-
-*/

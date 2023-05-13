@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import Loader from './Loader'
 import { useChangePasswordMutation } from '../redux/api/authorization'
+import { useSelector } from 'react-redux'
 import ToastNotification from './ToastNotification'
-import Cookies from 'js-cookie'
 
 const ChangePasswordSection = ({ showSection }) => {
   const [password, setPassword] = useState({
@@ -10,7 +10,6 @@ const ChangePasswordSection = ({ showSection }) => {
     password: '',
     password_confirmation: '',
   })
-  const [token, setToken] = useState('')
 
   const [badCPassword, setBadCPassword] = useState(false)
   const [badPassword, setBadPassword] = useState(false)
@@ -21,15 +20,7 @@ const ChangePasswordSection = ({ showSection }) => {
 
   const [changePassword, { isLoading }] = useChangePasswordMutation()
 
-  useEffect(() => {
-    var myToken = Cookies.get('token')
-    if (myToken) {
-      myToken = JSON.parse(token)
-    } else {
-      myToken = Cookies.get('tempToken')
-    }
-    setToken(myToken)
-  }, [])
+  const { token } = useSelector((state) => state.authorizationSlice)
 
   const onChangeHandler = (e) => {
     setPassword({
@@ -103,98 +94,93 @@ const ChangePasswordSection = ({ showSection }) => {
   }
 
   return (
-      <form className="flex flex-col mb-3" onSubmit={submitHandler}>
-        <label
-          htmlFor="current_password"
-          className="text-sm text-gray-500 mt-2"
+    <form className="flex flex-col mb-3" onSubmit={submitHandler}>
+      <label htmlFor="current_password" className="text-sm text-gray-500 mt-2">
+        Current Password
+      </label>
+      <input
+        type="password"
+        id="current_password"
+        name="current_password"
+        value={password.current_password}
+        onChange={onChangeHandler}
+        required
+        className=" outline-none p-1 border focus:border-b-blue-500"
+      />
+      {badCPassword && (
+        <p className="text-red-500 text-xs">
+          Password must be 8 characters or longer.
+        </p>
+      )}
+
+      <label htmlFor="password" className="text-sm text-gray-500 mt-2">
+        New Password
+      </label>
+      <input
+        type="password"
+        id="password"
+        name="password"
+        value={password.password}
+        onChange={onChangeHandler}
+        required
+        className={` outline-none p-1 border focus:border-b-blue-500 ${
+          badPasswordMatch && 'border-b-red-500'
+        }`}
+      />
+      {badPassword && (
+        <p className="text-red-500 text-xs">
+          Password must be 8 characters or longer.
+        </p>
+      )}
+
+      <label htmlFor="confirm-password" className="text-sm text-gray-500 mt-2">
+        Confirm New Password
+      </label>
+      <input
+        type="password"
+        id="confirm-password"
+        name="password_confirmation"
+        value={password.password_confirmation}
+        onChange={onChangeHandler}
+        required
+        className={` outline-none p-1 border focus:border-b-blue-500 ${
+          badPasswordMatch && 'border-b-red-500'
+        }`}
+      />
+      {badPasswordMatch && (
+        <p className="text-red-500 text-xs">Password must be same.</p>
+      )}
+      <div className="text-right space-x-2">
+        <button
+          className=" bg-blue-500 py-2 px-6 text-center text-white hover:bg-blue-600 mt-5 mb-1 disabled:bg-blue-200"
+          type="submit"
+          disabled={isLoading && true}
         >
-          Current Password
-        </label>
-        <input
-          type="password"
-          id="current_password"
-          name="current_password"
-          value={password.current_password}
-          onChange={onChangeHandler}
-          required
-          className=" outline-none p-1 border focus:border-b-blue-500"
-        />
-        {badCPassword && (
-          <p className="text-red-500 text-xs">
-            Password must be 8 characters or longer.
-          </p>
-        )}
-
-        <label htmlFor="password" className="text-sm text-gray-500 mt-2">
-          New Password
-        </label>
-        <input
-          type="password"
-          id="password"
-          name="password"
-          value={password.password}
-          onChange={onChangeHandler}
-          required
-          className={` outline-none p-1 border focus:border-b-blue-500 ${
-            badPasswordMatch && 'border-b-red-500'
-          }`}
-        />
-        {badPassword && (
-          <p className="text-red-500 text-xs">
-            Password must be 8 characters or longer.
-          </p>
-        )}
-
-        <label
-          htmlFor="confirm-password"
-          className="text-sm text-gray-500 mt-2"
+          {isLoading ? <Loader /> : 'Change'}
+        </button>
+        <button
+          className=" bg-gray-500 py-2 px-6 text-center text-white hover:bg-gray-600 mt-5 mb-1 disabled:bg-blue-200"
+          onClick={cancelHandler}
+          disabled={isLoading && true}
         >
-          Confirm New Password
-        </label>
-        <input
-          type="password"
-          id="confirm-password"
-          name="password_confirmation"
-          value={password.password_confirmation}
-          onChange={onChangeHandler}
-          required
-          className={` outline-none p-1 border focus:border-b-blue-500 ${
-            badPasswordMatch && 'border-b-red-500'
-          }`}
+          Cancel
+        </button>
+      </div>
+
+      {changeSuccess && (
+        <ToastNotification
+          mode="passwordChangeSuccess"
+          closeNotification={setChangeSuccess}
         />
-        {badPasswordMatch && (
-          <p className="text-red-500 text-xs">Password must be same.</p>
-        )}
-        <div className="text-right space-x-2">
-          <button
-            className=" bg-blue-500 py-2 px-6 text-center text-white hover:bg-blue-600 mt-5 mb-1 disabled:bg-blue-200"
-            type="submit"
-            disabled={isLoading && true}
-          >
-            {isLoading ? <Loader /> : 'Change'}
-          </button>
-          <button
-            className=" bg-gray-500 py-2 px-6 text-center text-white hover:bg-gray-600 mt-5 mb-1 disabled:bg-blue-200"
-            onClick={cancelHandler}
-          >
-            Cancel
-          </button>
-        </div>
+      )}
 
-        {changeSuccess && (
-          <ToastNotification
-            mode="passwordChangeSuccess"
-            closeNotification={setChangeSuccess}
-          />
-        )}
-
-        {changeFailed && (
-          <ToastNotification
-            mode="passwordChangeFailed"
-            closeNotification={setChangeFailed}
-          />
-        )}
-      </form>
+      {changeFailed && (
+        <ToastNotification
+          mode="passwordChangeFailed"
+          closeNotification={setChangeFailed}
+        />
+      )}
+    </form>
   )
 }
 

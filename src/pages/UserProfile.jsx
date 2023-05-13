@@ -1,45 +1,54 @@
 import React, { useEffect, useState } from 'react'
 import BackNavbar from '../components/BackNavbar'
 import { useDispatch, useSelector } from 'react-redux'
-import { useGetProfileQuery } from '../redux/api/authorization'
-import Cookies from 'js-cookie'
+import { useNavigate } from 'react-router-dom'
 import { IoMdArrowDropdown } from 'react-icons/io'
 import ChangePasswordSection from '../components/ChangePasswordSection'
-import DeleteAccountSection from '../components/DeleteAccountSection'
+import { removeData } from '../redux/services/authorizationSlice'
+import { useLogoutMutation } from '../redux/api/authorization'
 
 const UserProfile = () => {
   const [profile, setProfile] = useState({})
   const [showPasswordSection, setShowPasswordSection] = useState(false)
-  const [showDeleteSection, setShowDeleteSection] = useState(false)
+  const navigate = useNavigate()
+
+  const { user } = useSelector((state) => state.authorizationSlice)
+  const { token } = useSelector((state) => state.authorizationSlice)
+  const dispatch = useDispatch()
+
+  const [logout] = useLogoutMutation()
 
   useEffect(() => {
-    var user = Cookies.get('user')
     if (user) {
-      user = JSON.parse(user)
+      setProfile(user)
     } else {
-      user = JSON.parse(Cookies.get('tempUser'))
+      navigate('/')
     }
-    setProfile(user)
-    console.log(user)
   }, [])
+
+  const logOutHandler = () => {
+    dispatch(removeData())
+    logout(token)
+    navigate('/login')
+  }
 
   return (
     <>
       <BackNavbar />
-      <main className="flex justify-center">
-        <div className="w-[500px] shadow-md p-5">
-          <h2 className="text-xl font-semibold mb-1 select-none">
+      <main className="flex justify-center sm:mt-5 ">
+        <div className=" w-[500px] shadow-md p-5 sm:border-t-8 sm:border-t-blue-500 mb-10">
+          <h1 className="text-center text-blue-500 text-3xl mb-4">
             Profile Information
-          </h2>
+          </h1>
           <hr />
           <div className="space-y-2 my-3">
             <div>
               <h2 className="text-sm font-semibold select-none">Name</h2>
-              <p>{profile?.name}</p>
+              <p>{profile?.name?profile.name:'...'}</p>
             </div>
             <div>
               <h2 className="text-sm font-semibold select-none">Email</h2>
-              <p>{profile?.email}</p>
+              <p>{profile?.email?profile.email:'...'}</p>
             </div>
             <div>
               <h2 className="text-sm font-semibold select-none">
@@ -65,20 +74,13 @@ const UserProfile = () => {
           </h2>
           <hr />
           <div className="mt-3 mb-2">
-            <h2 className="text-red-500 cursor-pointer select-none text-sm hover:font-semibold">
+            <p
+              className="text-red-500 cursor-pointer select-none text-sm hover:font-semibold"
+              onClick={logOutHandler}
+            >
               Logout
-            </h2>
+            </p>
           </div>
-          <div
-            className="flex justify-between items-center text-sm cursor-pointer text-red-500 hover:font-semibold"
-            onClick={() => setShowDeleteSection(!showDeleteSection)}
-          >
-            <h2 className="select-none">Delete My Account</h2>
-            <IoMdArrowDropdown />
-          </div>
-          {showDeleteSection && (
-            <DeleteAccountSection showSection={setShowDeleteSection} />
-          )}
         </div>
       </main>
     </>

@@ -47,6 +47,5 @@ export const {
   useLoginMutation,
   useRegisterMutation,
   useLogoutMutation,
-  useGetProfileQuery,
   useChangePasswordMutation,
 } = authorization

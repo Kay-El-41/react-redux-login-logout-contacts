@@ -1,7 +1,7 @@
 import React from 'react'
 import Cookies from 'js-cookie'
 import { Navigate } from 'react-router-dom'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import { saveUserData } from '../redux/services/authorizationSlice'
 
 const RouteGuard = ({ children }) => {

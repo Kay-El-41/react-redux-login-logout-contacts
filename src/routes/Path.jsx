@@ -5,6 +5,8 @@ import Login from '../pages/Login'
 import Register from '../pages/Register'
 import UserProfile from '../pages/UserProfile'
 import RouteGuard from '../pages/RouteGuard'
+import ContactProfile from '../pages/ContactProfile'
+import EditContact from '../pages/EditContact'
 
 const Path = () => {
   return (
@@ -20,6 +22,8 @@ const Path = () => {
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/profile" element={<UserProfile />} />
+      <Route path="/contact/:id" element={<ContactProfile />} />
+      <Route path="/edit-contact" element={<EditContact />} />
     </Routes>
   )
 }
