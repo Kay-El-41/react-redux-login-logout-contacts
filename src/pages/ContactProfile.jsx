@@ -2,7 +2,12 @@ import React, { useEffect, useState } from 'react'
 import BackNavbar from '../components/BackNavbar'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate, useParams } from 'react-router-dom'
-import { useGetSingleContactQuery } from '../redux/api/contact'
+import {
+  useDeleteContactMutation,
+  useGetSingleContactQuery,
+} from '../redux/api/contact'
+import { loadUserData } from '../redux/services/authorizationSlice'
+import ConfirmDelete from '../components/ConfirmDelete'
 
 const ContactProfile = () => {
   const { id } = useParams()
@@ -10,16 +15,17 @@ const ContactProfile = () => {
   const [profile, setProfile] = useState({})
   const { token } = useSelector((state) => state.authorizationSlice)
   const { data, isLoading } = useGetSingleContactQuery({ id, token })
+  const [showDeleteSection, setShowDeleteSection] = useState(false)
+  const dispatch = useDispatch()
 
   useEffect(() => {
-    if (!token) {
-      navigate('/')
-    }
+    dispatch(loadUserData())
   }, [])
 
   useEffect(() => {
     setProfile(data?.contact)
   }, [data])
+
 
   const editHandler = () => {
     if (!isLoading) {
@@ -27,15 +33,22 @@ const ContactProfile = () => {
     }
   }
 
-  const deleteHandler = () => {
+  const deleteHandler = async () => {
     if (!isLoading) {
-      console.log(true)
+      setShowDeleteSection(true)
     }
   }
 
   return (
     <>
       <BackNavbar />
+      {showDeleteSection && (
+        <ConfirmDelete
+          close={setShowDeleteSection}
+          id={profile.id}
+          token={token}
+        />
+      )}
       <main className="flex justify-center sm:mt-5 ">
         <div className=" w-[500px] shadow-md p-5 sm:border-t-8 sm:border-t-blue-500 mb-10">
           <h1 className="text-center text-blue-500 text-3xl mb-4">

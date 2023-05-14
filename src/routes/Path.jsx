@@ -23,7 +23,7 @@ const Path = () => {
       <Route path="/register" element={<Register />} />
       <Route path="/profile" element={<UserProfile />} />
       <Route path="/contact/:id" element={<ContactProfile />} />
-      <Route path="/edit-contact" element={<EditContact />} />
+      <Route path="/edit-contact/:id" element={<EditContact />} />
     </Routes>
   )
 }

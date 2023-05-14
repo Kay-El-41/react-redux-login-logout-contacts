@@ -159,7 +159,7 @@ const ChangePasswordSection = ({ showSection }) => {
           {isLoading ? <Loader /> : 'Change'}
         </button>
         <button
-          className=" bg-gray-500 py-2 px-6 text-center text-white hover:bg-gray-600 mt-5 mb-1 disabled:bg-blue-200"
+          className=" bg-gray-500 py-2 px-6 text-center text-white hover:bg-gray-600 mt-5 mb-1 disabled:bg-gray-200"
           onClick={cancelHandler}
           disabled={isLoading && true}
         >

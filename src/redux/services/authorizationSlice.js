@@ -10,6 +10,13 @@ export const authorizationSlice = createSlice({
   name: 'authorizationSlice',
   initialState,
   reducers: {
+    loadUserData: (state) => {
+      const tempToken = Cookies.get('tempToken')
+      if (tempToken) {
+        state.user = JSON.parse(Cookies.get('tempUser'))
+        state.token = tempToken
+      }
+    },
     saveUserData: (state, { payload }) => {
       state.user = payload.user
       state.token = payload.token
@@ -32,6 +39,6 @@ export const authorizationSlice = createSlice({
   },
 })
 
-export const { saveUserData, saveLoginData, removeData } =
+export const { loadUserData, saveUserData, saveLoginData, removeData } =
   authorizationSlice.actions
 export default authorizationSlice.reducer

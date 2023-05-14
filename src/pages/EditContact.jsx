@@ -1,13 +1,19 @@
-import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
+import React, { useState, useEffect } from 'react'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import BackNavbar from '../components/BackNavbar'
 import Loader from '../components/Loader'
 import ToastNotification from '../components/ToastNotification'
 
-// TBD Later
-import { useRegisterMutation } from '../redux/api/authorization'
+import {
+  useGetSingleContactQuery,
+  useUpdateContactMutation,
+} from '../redux/api/contact'
+import { useDispatch, useSelector } from 'react-redux'
+import { loadUserData } from '../redux/services/authorizationSlice'
 
 const EditContact = () => {
+  const { id } = useParams()
+
   const [contact, setContact] = useState({
     name: '',
     email: '',
@@ -16,12 +22,33 @@ const EditContact = () => {
   })
   const [badName, setBadName] = useState(false)
   const [badMail, setBadMail] = useState(false)
+  const [badPhone, setBadPhone] = useState(false)
 
-  const [changeSuccess, setChangeSuccess] = useState(false)
+  const [updateSuccess, setUpdateSuccess] = useState(false)
   const [connectionError, setConnectionError] = useState(false)
 
-  // TBD later
-  const [register, { isLoading }] = useRegisterMutation()
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+  const [updateContact, { isLoading: updating }] = useUpdateContactMutation()
+
+  const { token } = useSelector((state) => state.authorizationSlice)
+  const { data, isLoading } = useGetSingleContactQuery({ id, token })
+
+  useEffect(() => {
+    dispatch(loadUserData())
+  }, [])
+
+  useEffect(() => {
+    if (data) {
+      const { name, email, address, phone } = data?.contact
+      setContact({
+        name: name ? name : '',
+        email: email ? email : '',
+        address: address ? address : '',
+        phone: phone ? phone : '',
+      })
+    }
+  }, [data])
 
   const onChangeHandler = (e) => {
     setContact({
@@ -47,10 +74,23 @@ const EditContact = () => {
         setBadMail(true)
       }
     }
+
+    // phone validation
+    if (e.target.name === 'phone') {
+      if (e.target.value.length > 3) {
+        if (/^\d+$/.test(e.target.value)) {
+          setBadPhone(false)
+        } else {
+          setBadPhone(true)
+        }
+      } else {
+        setBadPhone(true)
+      }
+    }
   }
 
   const registerValidation = () => {
-    if (badName || badMail) {
+    if (badName || badMail || badPhone) {
       console.log('bad')
       return false
     } else {
@@ -59,37 +99,39 @@ const EditContact = () => {
     }
   }
 
-  const resetForm = () => {
-    setUser({
-      name: '',
-      email: '',
-      password: '',
-      password_confirmation: '',
-    })
-  }
-
   const submitHandler = async (e) => {
     e.preventDefault()
-    // if (registerValidation()) {
-    //   try {
-    //     const { data } = await register(user)
-    //     console.log(data)
-    //     if (!data) {
-    //       setConnectionError(true)
-    //     } else if (data?.success) {
-    //       setRegisterSuccess(true)
-    //       resetForm()
-    //     }
-    //   } catch (error) {
-    //     console.error(error)
-    //   }
-    // }
+    setContact({
+      ...contact,
+      phone: +contact.phone,
+    })
+    if (registerValidation()) {
+      try {
+        const { data } = await updateContact({
+          id,
+          token,
+          updateContact: contact,
+        })
+        console.log(data)
+        if (!data) {
+          setConnectionError(true)
+        } else if (data?.success) {
+          setUpdateSuccess(true)
+        }
+      } catch (error) {
+        console.error(error)
+      }
+    }
+  }
+
+  const cancelHandler = (e) => {
+    e.preventDefault()
+    navigate(-1)
   }
 
   return (
     <>
       <BackNavbar />
-
       <main className="flex justify-center sm:mt-5 ">
         <div className=" w-[500px] shadow-md p-5 sm:border-t-8 sm:border-t-blue-500 mb-10">
           <h1 className="text-center text-blue-500 text-3xl mb-4">
@@ -139,16 +181,22 @@ const EditContact = () => {
               Phone
             </label>
             <input
-              type="number"
+              type="tel"
               id="phone"
               name="phone"
               onChange={onChangeHandler}
               value={contact.phone}
               required
               className={` outline-none p-1 border focus:border-b-blue-500 ${
-                badMail && 'border-b-red-500'
+                badPhone && 'border-b-red-500'
               }`}
             />
+
+            {badPhone && (
+              <p className="text-red-500 text-xs">
+                A valid phone number is required
+              </p>
+            )}
 
             <label htmlFor="address" className="text-sm text-gray-500 mt-2">
               Address
@@ -159,26 +207,32 @@ const EditContact = () => {
               name="address"
               onChange={onChangeHandler}
               value={contact.address}
-              required
-              className={` outline-none p-1 border focus:border-b-blue-500 ${
-                badMail && 'border-b-red-500'
-              }`}
+              className=" outline-none p-1 border focus:border-b-blue-500"
             />
+            <div className="flex justify-between">
+              <button
+                className=" bg-blue-500 px-6 py-2 text-center text-white hover:bg-blue-600 mt-5 mb-1 disabled:bg-blue-200"
+                type="submit"
+                disabled={(isLoading || updating) && true}
+              >
+                {isLoading || updating ? <Loader /> : 'Update'}
+              </button>
 
-            <button
-              className=" bg-blue-500 py-2 text-center text-white hover:bg-blue-600 mt-5 mb-1 disabled:bg-blue-200"
-              type="submit"
-              disabled={isLoading && true}
-            >
-              {isLoading ? <Loader /> : 'Sign Up'}
-            </button>
+              <button
+                className=" bg-gray-500 py-2 px-6 text-center text-white hover:bg-gray-600 mt-5 mb-1 disabled:bg-gray-200"
+                disabled={(isLoading || updating) && true}
+                onClick={cancelHandler}
+              >
+                {isLoading || updating ? <Loader /> : 'Cancel'}
+              </button>
+            </div>
           </form>
         </div>
 
-        {changeSuccess && (
+        {updateSuccess && (
           <ToastNotification
-            mode="registerSuccess"
-            closeNotification={setChangeSuccess}
+            mode="updateSuccess"
+            closeNotification={setUpdateSuccess}
           />
         )}
 

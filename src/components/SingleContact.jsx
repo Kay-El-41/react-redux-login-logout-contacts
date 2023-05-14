@@ -1,9 +1,13 @@
 import React, { useState } from 'react'
 import { CiMenuKebab } from 'react-icons/ci'
 import { useNavigate } from 'react-router-dom'
+import ConfirmDelete from '../components/ConfirmDelete'
+import { useSelector } from 'react-redux'
 
 const SingleContact = ({ id, name, email }) => {
   const [showMenu, setShowMenu] = useState(false)
+  const [showDeleteSection, setShowDeleteSection] = useState(false)
+  const { token } = useSelector((state) => state.authorizationSlice)
   const navigate = useNavigate()
 
   const onClickHandler = () => {
@@ -15,11 +19,14 @@ const SingleContact = ({ id, name, email }) => {
   }
 
   const deleteHandler = () => {
-    console.log('will delete soon')
+    setShowDeleteSection(true)
   }
 
   return (
     <>
+      {showDeleteSection && (
+        <ConfirmDelete close={setShowDeleteSection} id={id} token={token} />
+      )}
       <div className="relative flex justify-between items-center">
         <div className="select-none py-1">
           <p
@@ -65,5 +72,3 @@ const SingleContact = ({ id, name, email }) => {
 
 export default SingleContact
 
-
-// update delete function, can be copied to or be copied to Contact Profile. JSX

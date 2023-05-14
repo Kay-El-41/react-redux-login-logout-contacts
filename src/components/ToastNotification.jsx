@@ -21,6 +21,9 @@ const ToastNotification = ({ mode, closeNotification }) => {
     } else if (mode === 'passwordChangeFailed') {
       setHeading('Incorrect Password')
       setBodyText('Please try again.')
+    } else if (mode === 'updateSuccess') {
+      setHeading('Update Successful')
+      setBodyText('Contact is updated successfully.')
     }
   }, [mode])
 

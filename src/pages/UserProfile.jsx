@@ -4,11 +4,10 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { IoMdArrowDropdown } from 'react-icons/io'
 import ChangePasswordSection from '../components/ChangePasswordSection'
-import { removeData } from '../redux/services/authorizationSlice'
+import { loadUserData, removeData } from '../redux/services/authorizationSlice'
 import { useLogoutMutation } from '../redux/api/authorization'
 
 const UserProfile = () => {
-  const [profile, setProfile] = useState({})
   const [showPasswordSection, setShowPasswordSection] = useState(false)
   const navigate = useNavigate()
 
@@ -19,11 +18,7 @@ const UserProfile = () => {
   const [logout] = useLogoutMutation()
 
   useEffect(() => {
-    if (user) {
-      setProfile(user)
-    } else {
-      navigate('/')
-    }
+    dispatch(loadUserData())
   }, [])
 
   const logOutHandler = () => {
@@ -44,17 +39,17 @@ const UserProfile = () => {
           <div className="space-y-2 my-3">
             <div>
               <h2 className="text-sm font-semibold select-none">Name</h2>
-              <p>{profile?.name?profile.name:'...'}</p>
+              <p>{user?.name ? user.name : '...'}</p>
             </div>
             <div>
               <h2 className="text-sm font-semibold select-none">Email</h2>
-              <p>{profile?.email?profile.email:'...'}</p>
+              <p>{user?.email ? user.email : '...'}</p>
             </div>
             <div>
               <h2 className="text-sm font-semibold select-none">
                 Created Date
               </h2>
-              <p>{profile?.created_at?.slice(0, 10)}</p>
+              <p>{user?.created_at?.slice(0, 10)}</p>
             </div>
           </div>
           <h2 className="text-xl font-semibold mb-1 select-none">Settings</h2>
