@@ -1,17 +1,22 @@
 import React from 'react'
-import { IoIosArrowBack } from 'react-icons/io'
 import { useNavigate } from 'react-router-dom'
+import { IoIosArrowBack } from 'react-icons/io'
 
 const BackNavbar = () => {
   const navigate = useNavigate()
+
+  const clickHandler = () => {
+    navigate(-1)
+  }
+
   return (
-    <nav className="relative bg-blue-500 flex h-16 p-3 sm:p-5">
+    <nav className="relative flex h-16 bg-blue-500 p-3 sm:p-5">
       <div
-        className="text-white flex items-center cursor-pointer"
-        onClick={() => navigate(-1)}
+        className="flex cursor-pointer items-center text-white"
+        onClick={clickHandler}
       >
-        <IoIosArrowBack className="text-xl" />
-        <p className="text-xl">Back</p>
+        <IoIosArrowBack className="text-md" />
+        <p>BACK</p>
       </div>
     </nav>
   )

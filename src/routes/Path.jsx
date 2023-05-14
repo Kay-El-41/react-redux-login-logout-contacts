@@ -7,6 +7,7 @@ import UserProfile from '../pages/UserProfile'
 import RouteGuard from '../pages/RouteGuard'
 import ContactProfile from '../pages/ContactProfile'
 import EditContact from '../pages/EditContact'
+import AddContact from '../pages/AddContact'
 
 const Path = () => {
   return (
@@ -23,6 +24,7 @@ const Path = () => {
       <Route path="/register" element={<Register />} />
       <Route path="/profile" element={<UserProfile />} />
       <Route path="/contact/:id" element={<ContactProfile />} />
+      <Route path="/add-contact" element={<AddContact />} />
       <Route path="/edit-contact/:id" element={<EditContact />} />
     </Routes>
   )

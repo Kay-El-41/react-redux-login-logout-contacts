@@ -32,7 +32,7 @@ const UserProfile = () => {
       <BackNavbar />
       <main className="flex justify-center sm:mt-5 ">
         <div className=" w-[500px] shadow-md p-5 sm:border-t-8 sm:border-t-blue-500 mb-10">
-          <h1 className="text-center text-blue-500 text-3xl mb-4">
+          <h1 className="text-center text-blue-500 text-2xl mb-4">
             Profile Information
           </h1>
           <hr />

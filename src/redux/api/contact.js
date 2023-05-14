@@ -17,15 +17,24 @@ export const contact = createApi({
     }),
     getSingleContact: builder.query({
       query: ({ id, token }) => ({
-        url: `contact/${id}`,
+        url: `/contact/${id}`,
         method: 'GET',
         headers: { authorization: `Bearer ${token}` },
       }),
       providesTags: ['contact'],
     }),
+    addContact: builder.mutation({
+      query: ({ token, newContact }) => ({
+        url: `/contact`,
+        method: 'POST',
+        headers: { authorization: `Bearer ${token}` },
+        body: newContact,
+      }),
+      invalidatesTags: ['contact'],
+    }),
     updateContact: builder.mutation({
       query: ({ id, token, updateContact }) => ({
-        url: `contact/${id}`,
+        url: `/contact/${id}`,
         method: 'PUT',
         headers: { authorization: `Bearer ${token}` },
         body: updateContact,
@@ -34,7 +43,7 @@ export const contact = createApi({
     }),
     deleteContact: builder.mutation({
       query: ({ id, token }) => ({
-        url: `contact/${id}`,
+        url: `/contact/${id}`,
         method: 'DELETE',
         headers: { authorization: `Bearer ${token}` },
       }),
@@ -48,4 +57,5 @@ export const {
   useGetSingleContactQuery,
   useUpdateContactMutation,
   useDeleteContactMutation,
+  useAddContactMutation,
 } = contact

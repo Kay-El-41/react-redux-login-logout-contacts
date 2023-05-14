@@ -2,7 +2,7 @@ import { createSlice } from '@reduxjs/toolkit'
 
 const initialState = {
   contacts: [],
-  searchTerm: null,
+  paginationLinks: [],
 }
 
 export const contactSlice = createSlice({
@@ -12,8 +12,11 @@ export const contactSlice = createSlice({
     loadContact: (state, { payload }) => {
       state.contacts = payload
     },
+    updateLinks: (state, { payload }) => {
+      state.paginationLinks = payload
+    },
   },
 })
 
-export const {loadContact} = contactSlice.actions
+export const { loadContact, updateLinks } = contactSlice.actions
 export default contactSlice.reducer

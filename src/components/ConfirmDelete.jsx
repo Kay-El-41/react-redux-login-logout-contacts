@@ -1,17 +1,20 @@
 import React from 'react'
-import { useDeleteContactMutation } from '../redux/api/contact'
 import { useNavigate } from 'react-router-dom'
+import { useDeleteContactMutation } from '../redux/api/contact'
 import Loader from './Loader'
 
 const ConfirmDelete = ({ close, id, token }) => {
-  const [deleteContact, { isLoading }] = useDeleteContactMutation()
   const navigate = useNavigate()
 
+  // Redux function to perform action
+  const [deleteContact, { isLoading }] = useDeleteContactMutation()
+
+  // Function to cancel and close the dialog box
   const cancelHandler = () => {
-    close(false)
-    // this is set to false due to reverse naming from parent
+    close(true)
   }
 
+  // MAIN function to delete the contact
   const deleteHandler = async () => {
     try {
       const data = await deleteContact({ id, token })
@@ -22,20 +25,25 @@ const ConfirmDelete = ({ close, id, token }) => {
   }
 
   return (
-    <div className="z-20 bg-white border-t-8 border-t-red-500 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col gap-2 shadow-md w-[300px] p-5">
-      <h2 className="font-semibold text-red-500">Delete</h2>
+    <div className="absolute top-1/2 left-1/2 z-10 flex w-[300px] -translate-x-1/2 -translate-y-1/2 flex-col gap-2 border-t-8 border-t-red-500 bg-white p-5 shadow-md">
+      {/* Heading */}
+      <h2 className="text-xl font-semibold text-red-500">Delete</h2>
       <hr />
-      <h3>Are you sure to delete this contact?</h3>
-      <div className="flex justify-between mt-2">
+      {/* Confirm Message */}
+      <p className="">Are you sure to delete this contact?</p>
+
+      {/* Buttons Division */}
+      <div className="mt-3 flex justify-between">
         <button
-          className="px-6 py-1 bg-red-500 text-white hover:bg-red-600 disabled:bg-red-200"
+          className="bg-red-500 px-6 py-1 text-sm text-white hover:bg-red-600 disabled:bg-red-200"
           onClick={deleteHandler}
           disabled={isLoading && true}
         >
           {isLoading ? <Loader /> : 'Yes'}
         </button>
+
         <button
-          className="px-6 py-1 bg-gray-500 text-white hover:bg-gray-600 disabled:bg-gray-200"
+          className="bg-gray-500 px-6 py-1 text-sm text-white hover:bg-gray-600 disabled:bg-gray-200"
           onClick={cancelHandler}
           disabled={isLoading && true}
         >

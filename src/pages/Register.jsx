@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import Loader from '../components/Loader'
 import { useRegisterMutation } from '../redux/api/authorization'
 import ToastNotification from '../components/ToastNotification'
+import FooterCopyright from '../components/FooterCopyright'
 
 const Register = () => {
   const [user, setUser] = useState({
@@ -16,7 +17,7 @@ const Register = () => {
   const [badPassword, setBadPassword] = useState(false)
   const [badPasswordMatch, setBadPasswordMatch] = useState(false)
 
-  const [registerSuccess, setRegisterSuccess] = useState(true)
+  const [registerSuccess, setRegisterSuccess] = useState(false)
   const [connectionError, setConnectionError] = useState(false)
 
   const [register, { isLoading }] = useRegisterMutation()
@@ -108,124 +109,129 @@ const Register = () => {
   }
 
   return (
-    <main className=" flex justify-center items-center h-screen">
-      <div className=" bg-white border-t-8 border-t-blue-500 shadow-md p-5 w-[300px]">
-        <h1 className="text-center text-blue-500 text-3xl mb-4">
-          Create Account
-        </h1>
-        <form className=" flex flex-col" onSubmit={submitHandler}>
-          <label htmlFor="username" className="text-sm text-gray-500 ">
-            Username
-          </label>
-          <input
-            type="text"
-            id="username"
-            name="name"
-            onChange={onChangeHandler}
-            required
-            className={` outline-none p-1 border focus:border-b-blue-500 ${
-              badName && 'border-b-red-500'
-            }`}
-          />
-          {badName && (
-            <p className="text-red-500 text-xs">
-              Name must be 4 Characters Long.
-            </p>
-          )}
-          <label htmlFor="email" className="text-sm text-gray-500 mt-2">
-            Email Address
-          </label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            onChange={onChangeHandler}
-            required
-            className={` outline-none p-1 border focus:border-b-blue-500 ${
-              badMail && 'border-b-red-500'
-            }`}
-          />
-          {badMail && (
-            <p className="text-red-500 text-xs">Please enter a valid email.</p>
-          )}
-          <label htmlFor="password" className="text-sm text-gray-500 mt-2">
-            Password
-          </label>
-          <input
-            type="password"
-            id="password"
-            name="password"
-            onChange={onChangeHandler}
-            required
-            className={` outline-none p-1 border focus:border-b-blue-500 ${
-              badPasswordMatch && 'border-b-red-500'
-            }`}
-          />
-          {badPassword && (
-            <p className="text-red-500 text-xs">
-              Password must be 8 characters or longer.
-            </p>
-          )}
-          <label
-            htmlFor="confirm-password"
-            className="text-sm text-gray-500 mt-2"
-          >
-            Confirm Password
-          </label>
-          <input
-            type="password"
-            id="confirm-password"
-            name="password_confirmation"
-            onChange={onChangeHandler}
-            required
-            className={` outline-none p-1 border focus:border-b-blue-500 ${
-              badPasswordMatch && 'border-b-red-500'
-            }`}
-          />
-          {badPasswordMatch && (
-            <p className="text-red-500 text-xs">Password must be same.</p>
-          )}
-          <div className="mt-2">
-            <input
-              type="checkbox"
-              id="agreement"
-              className=" accent-blue-500"
-              required
-            />
-            <label htmlFor="agreement" className="text-sm">
-              &nbsp;I agree to the terms of the app.
+    <>
+      <main className=" flex h-screen items-center justify-center">
+        <div className=" w-[300px] border-t-8 border-t-blue-500 bg-white p-5 shadow-md">
+          <h1 className="mb-4 text-center text-2xl text-blue-500">
+            Create Account
+          </h1>
+          <form className=" flex flex-col" onSubmit={submitHandler}>
+            <label htmlFor="username" className="text-sm text-gray-500 ">
+              Username
             </label>
-          </div>
-          <button
-            className=" bg-blue-500 py-2 text-center text-white hover:bg-blue-600 mt-5 mb-1 disabled:bg-blue-200"
-            type="submit"
-            disabled={isLoading && true}
-          >
-            {isLoading ? <Loader /> : 'Sign Up'}
-          </button>
-          <div className=" flex text-sm">
-            <p>Already have an account?&nbsp;</p>
-            <Link to={'/login'}>
-              <p className="text-blue-500 hover:text-blue-700">Login</p>
-            </Link>
-          </div>
-        </form>
-      </div>
+            <input
+              type="text"
+              id="username"
+              name="name"
+              onChange={onChangeHandler}
+              required
+              className={` border p-1 outline-none focus:border-b-blue-500 ${
+                badName && 'border-b-red-500'
+              }`}
+            />
+            {badName && (
+              <p className="text-xs text-red-500">
+                Name must be 4 Characters Long.
+              </p>
+            )}
+            <label htmlFor="email" className="mt-2 text-sm text-gray-500">
+              Email Address
+            </label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              onChange={onChangeHandler}
+              required
+              className={` border p-1 outline-none focus:border-b-blue-500 ${
+                badMail && 'border-b-red-500'
+              }`}
+            />
+            {badMail && (
+              <p className="text-xs text-red-500">
+                Please enter a valid email.
+              </p>
+            )}
+            <label htmlFor="password" className="mt-2 text-sm text-gray-500">
+              Password
+            </label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              onChange={onChangeHandler}
+              required
+              className={` border p-1 outline-none focus:border-b-blue-500 ${
+                badPasswordMatch && 'border-b-red-500'
+              }`}
+            />
+            {badPassword && (
+              <p className="text-xs text-red-500">
+                Password must be 8 characters or longer.
+              </p>
+            )}
+            <label
+              htmlFor="confirm-password"
+              className="mt-2 text-sm text-gray-500"
+            >
+              Confirm Password
+            </label>
+            <input
+              type="password"
+              id="confirm-password"
+              name="password_confirmation"
+              onChange={onChangeHandler}
+              required
+              className={` border p-1 outline-none focus:border-b-blue-500 ${
+                badPasswordMatch && 'border-b-red-500'
+              }`}
+            />
+            {badPasswordMatch && (
+              <p className="text-xs text-red-500">Password must be same.</p>
+            )}
+            <div className="mt-2">
+              <input
+                type="checkbox"
+                id="agreement"
+                className=" accent-blue-500"
+                required
+              />
+              <label htmlFor="agreement" className="text-sm">
+                &nbsp;I agree to the terms of the app.
+              </label>
+            </div>
+            <button
+              className=" mt-5 mb-1 bg-blue-500 py-2 text-center text-white hover:bg-blue-600 disabled:bg-blue-200"
+              type="submit"
+              disabled={isLoading && true}
+            >
+              {isLoading ? <Loader /> : 'Sign Up'}
+            </button>
+            <div className=" flex text-sm">
+              <p>Already have an account?&nbsp;</p>
+              <Link to={'/login'}>
+                <p className="text-blue-500 hover:text-blue-700">Login</p>
+              </Link>
+            </div>
+          </form>
+        </div>
 
-      {registerSuccess && (
-        <ToastNotification
-          mode="registerSuccess"
-          closeNotification={setRegisterSuccess}
-        />
-      )}
+        {registerSuccess && (
+          <ToastNotification
+            mode="registerSuccess"
+            closeNotification={setRegisterSuccess}
+          />
+        )}
 
-      {connectionError && (
-        <ToastNotification
-          mode="failedConnection"
-          closeNotification={setConnectionError}
-        />
-      )}
-    </main>
+        {connectionError && (
+          <ToastNotification
+            mode="failedConnection"
+            closeNotification={setConnectionError}
+          />
+        )}
+      </main>
+      <FooterCopyright />
+    </>
   )
 }
 

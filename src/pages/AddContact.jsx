@@ -1,22 +1,16 @@
 import React, { useState, useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { useNavigate, useParams } from 'react-router-dom'
-
-import {
-  useGetSingleContactQuery,
-  useUpdateContactMutation,
-} from '../redux/api/contact'
-import { loadUserData } from '../redux/services/authorizationSlice'
+import { useNavigate } from 'react-router-dom'
 
 import Loader from '../components/Loader'
 import BackNavbar from '../components/BackNavbar'
 import ToastNotification from '../components/ToastNotification'
 
-const EditContact = () => {
-  // Get id to fetch contact data to fill in edit form
-  const { id } = useParams()
+import { useAddContactMutation } from '../redux/api/contact'
+import { useDispatch, useSelector } from 'react-redux'
+import { loadUserData } from '../redux/services/authorizationSlice'
 
-  // State to collect data and prefill form
+const AddContact = () => {
+  // state for data
   const [contact, setContact] = useState({
     name: '',
     email: '',
@@ -24,52 +18,38 @@ const EditContact = () => {
     address: '',
   })
 
-  // States for data validation and live feedbacks
+  // states for data validation and live feedback
   const [badName, setBadName] = useState(false)
   const [badMail, setBadMail] = useState(false)
   const [badPhone, setBadPhone] = useState(false)
 
-  // States for action feedbacks
+  // states for action feedbacks
   const [updateSuccess, setUpdateSuccess] = useState(false)
   const [connectionError, setConnectionError] = useState(false)
 
-  const dispatch = useDispatch()
   const navigate = useNavigate()
+  const dispatch = useDispatch()
 
-  // REDUX function to edit and update a contact
-  const [updateContact, { isLoading: updating }] = useUpdateContactMutation()
+  // Redux Function for creating new contacts
+  const [addContact, { isLoading }] = useAddContactMutation()
 
-  // Token is required to fetch data
+  // Token is required for creating new contacts
   const { token } = useSelector((state) => state.authorizationSlice)
-  // Get Contact Data from server
-  const { data, isLoading } = useGetSingleContactQuery({ id, token })
 
   useEffect(() => {
-    // To prevent data losing from refresh
+    // THIS IS REQUIRED,
+    // When user refresh the page, data won't disappear since refreshing loses the data especially when we need token
     dispatch(loadUserData())
   }, [])
 
-  // Once contact data is fetched, set it in the state, so the inputs are prefilled with existing data
-  useEffect(() => {
-    if (data) {
-      const { name, email, address, phone } = data?.contact
-      setContact({
-        name: name ? name : '',
-        email: email ? email : '',
-        address: address ? address : '',
-        phone: phone ? phone : '',
-      })
-    }
-  }, [data])
-
-  // Get data from the inputs and live validation, and show feedbacks
+  // Function for collecting data from form and live validation and give feedback
   const onChangeHandler = (e) => {
     setContact({
       ...contact,
       [e.target.name]: e.target.value,
     })
 
-    // Name Validation, required must be over 4 characters
+    // Name validation (Required and must be 4 or over)
     if (e.target.name === 'name') {
       if (e.target.value.length > 4) {
         setBadName(false)
@@ -78,7 +58,7 @@ const EditContact = () => {
       }
     }
 
-    // Mail Validation, not required but when filled, required a valid email
+    // Mail validation (not Required but when added, required a correct mail)
     if (e.target.name === 'email') {
       const format = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/
       if (e.target.value.match(format) || e.target.value === '') {
@@ -88,7 +68,7 @@ const EditContact = () => {
       }
     }
 
-    //Phone Validation, required and must be over 3 characters and must only numbers
+    // Phone Validation (Required and must be over 3, and must be only numbers)
     if (e.target.name === 'phone') {
       if (e.target.value.length > 3) {
         if (/^\d+$/.test(e.target.value)) {
@@ -100,11 +80,20 @@ const EditContact = () => {
         setBadPhone(true)
       }
     }
-
     // Address is optional
   }
 
-  // Function for Data Validation before updating contact
+  // Function to reset form after creating a contact
+  const resetForm = () => {
+    setContact({
+      name: '',
+      email: '',
+      phone: '',
+      address: '',
+    })
+  }
+
+  // Function for Data Validation before performing action
   const registerValidation = () => {
     if (badName || badMail || badPhone) {
       return false
@@ -113,25 +102,25 @@ const EditContact = () => {
     }
   }
 
-  //  MAIN function to update a contact
+  // MAIN Function to perform the action, creating a new contact
   const submitHandler = async (e) => {
     e.preventDefault()
-    // Phone must be integer
+    // phone number must be integer
     setContact({
       ...contact,
       phone: +contact.phone,
     })
     if (registerValidation()) {
       try {
-        const { data } = await updateContact({
-          id,
+        const { data } = await addContact({
           token,
-          updateContact: contact,
+          newContact: contact,
         })
         if (!data) {
           setConnectionError(true)
         } else if (data?.success) {
           setUpdateSuccess(true)
+          resetForm()
         }
       } catch (error) {
         console.error(error)
@@ -139,7 +128,7 @@ const EditContact = () => {
     }
   }
 
-  // When cancelled, go back to previous page
+  // Function to go back to previous page, when user clicked CANCEL button
   const cancelHandler = (e) => {
     e.preventDefault()
     navigate(-1)
@@ -148,15 +137,15 @@ const EditContact = () => {
   return (
     <>
       <BackNavbar />
-      <main className="flex justify-center sm:mt-5 ">
+      <main className="flex justify-center sm:mt-5">
         <div className=" mb-10 w-[500px] p-5 shadow-md sm:border-t-8 sm:border-t-blue-500">
-          {/* Headers */}
+          {/* Heading */}
           <h1 className="mb-4 text-center text-2xl text-blue-500">
-            Edit Account
+            Add New Account
           </h1>
-          {/* Inputs */}
+          {/* Form Inputs */}
+          {/* Name */}
           <form className=" flex flex-col" onSubmit={submitHandler}>
-            {/* Name */}
             <label htmlFor="name" className="text-sm text-gray-500 ">
               Name
             </label>
@@ -186,7 +175,6 @@ const EditContact = () => {
               name="email"
               onChange={onChangeHandler}
               value={contact.email}
-              required
               className={` border p-1 outline-none focus:border-b-blue-500 ${
                 badMail && 'border-b-red-500'
               }`}
@@ -232,28 +220,28 @@ const EditContact = () => {
             {/* Buttons Division */}
             <div className="flex justify-between">
               <button
-                className=" mt-5 mb-1 bg-blue-500 px-6 py-2 text-center text-white hover:bg-blue-600 disabled:bg-blue-200"
+                className=" mt-5 mb-1 bg-blue-500 px-8 py-2 text-center text-white hover:bg-blue-600 disabled:bg-blue-200"
                 type="submit"
-                disabled={(isLoading || updating) && true}
+                disabled={isLoading && true}
               >
-                {isLoading || updating ? <Loader /> : 'Update'}
+                {isLoading ? <Loader /> : 'Add'}
               </button>
 
               <button
                 className=" mt-5 mb-1 bg-gray-500 py-2 px-6 text-center text-white hover:bg-gray-600 disabled:bg-gray-200"
-                disabled={(isLoading || updating) && true}
+                disabled={isLoading && true}
                 onClick={cancelHandler}
               >
-                {isLoading || updating ? <Loader /> : 'Cancel'}
+                {isLoading ? <Loader /> : 'Cancel'}
               </button>
             </div>
           </form>
         </div>
 
-        {/* ToastNotifications, absolute positioned */}
+        {/* Toast Notification for action feedbacks, absolute positioned */}
         {updateSuccess && (
           <ToastNotification
-            mode="updateSuccess"
+            mode="addSuccess"
             closeNotification={setUpdateSuccess}
           />
         )}
@@ -269,6 +257,6 @@ const EditContact = () => {
   )
 }
 
-export default EditContact
+export default AddContact
 
 // NEED OVERHAUL EDIT
