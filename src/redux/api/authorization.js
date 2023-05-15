@@ -1,10 +1,12 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
+// Redux Functions for User Profile
 
 export const authorization = createApi({
   reducerPath: 'authorization',
   baseQuery: fetchBaseQuery({
     baseUrl: 'https://contact-app.mmsdev.site/api/v1',
   }),
+  // tagTypes for auto refreshing when there are changes in data
   tagTypes: ['authorization'],
   endpoints: (builder) => ({
     login: builder.mutation({

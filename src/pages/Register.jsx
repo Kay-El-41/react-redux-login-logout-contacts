@@ -1,34 +1,41 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
-import Loader from '../components/Loader'
+
 import { useRegisterMutation } from '../redux/api/authorization'
 import ToastNotification from '../components/ToastNotification'
+
+import Loader from '../components/Loader'
 import FooterCopyright from '../components/FooterCopyright'
 
 const Register = () => {
+  // State to collect register data
   const [user, setUser] = useState({
     name: '',
     email: '',
     password: '',
     password_confirmation: '',
   })
+  // State for data validation and live feedbacks
   const [badName, setBadName] = useState(false)
   const [badMail, setBadMail] = useState(false)
   const [badPassword, setBadPassword] = useState(false)
   const [badPasswordMatch, setBadPasswordMatch] = useState(false)
 
+  // State for action feedbacks
   const [registerSuccess, setRegisterSuccess] = useState(false)
   const [connectionError, setConnectionError] = useState(false)
 
+  // Redux Function to register new account
   const [register, { isLoading }] = useRegisterMutation()
 
+  // Get data and live validate, show live feedback
   const onChangeHandler = (e) => {
     setUser({
       ...user,
       [e.target.name]: e.target.value,
     })
 
-    // name validation
+    // Name Validation, Required & Name must be over 4 characters
     if (e.target.name === 'name') {
       if (e.target.value.length > 4) {
         setBadName(false)
@@ -37,7 +44,7 @@ const Register = () => {
       }
     }
 
-    // mail validation
+    // Mail Validation, Required
     if (e.target.name === 'email') {
       const format = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/
       if (e.target.value.match(format)) {
@@ -47,7 +54,7 @@ const Register = () => {
       }
     }
 
-    // password validation
+    // Password Validation, Required and must be over 8 characters
     if (e.target.name === 'password') {
       if (e.target.value.length >= 8) {
         setBadPassword(false)
@@ -61,7 +68,7 @@ const Register = () => {
       }
     }
 
-    // same password validation
+    // Password Confirmation, Required and must be the same as password input
     if (e.target.name === 'password_confirmation') {
       if (e.target.value === user.password) {
         setBadPasswordMatch(false)
@@ -71,6 +78,7 @@ const Register = () => {
     }
   }
 
+  // Function to validate data before performing action
   const registerValidation = () => {
     if (badName || badMail || badPassword || badPasswordMatch) {
       console.log('bad')
@@ -81,6 +89,7 @@ const Register = () => {
     }
   }
 
+  // Function to reset form when registering success
   const resetForm = () => {
     setUser({
       name: '',
@@ -90,6 +99,7 @@ const Register = () => {
     })
   }
 
+  // MAIN function to register a new user,
   const submitHandler = async (e) => {
     e.preventDefault()
     if (registerValidation()) {
@@ -112,10 +122,12 @@ const Register = () => {
     <>
       <main className=" flex h-screen items-center justify-center">
         <div className=" w-[300px] border-t-8 border-t-blue-500 bg-white p-5 shadow-md">
+          {/* Header */}
           <h1 className="mb-4 text-center text-2xl text-blue-500">
             Create Account
           </h1>
           <form className=" flex flex-col" onSubmit={submitHandler}>
+            {/* Name */}
             <label htmlFor="username" className="text-sm text-gray-500 ">
               Username
             </label>
@@ -134,6 +146,7 @@ const Register = () => {
                 Name must be 4 Characters Long.
               </p>
             )}
+            {/* Email */}
             <label htmlFor="email" className="mt-2 text-sm text-gray-500">
               Email Address
             </label>
@@ -152,6 +165,7 @@ const Register = () => {
                 Please enter a valid email.
               </p>
             )}
+            {/* Password */}
             <label htmlFor="password" className="mt-2 text-sm text-gray-500">
               Password
             </label>
@@ -170,6 +184,7 @@ const Register = () => {
                 Password must be 8 characters or longer.
               </p>
             )}
+            {/* Confirmation Password */}
             <label
               htmlFor="confirm-password"
               className="mt-2 text-sm text-gray-500"
@@ -189,6 +204,7 @@ const Register = () => {
             {badPasswordMatch && (
               <p className="text-xs text-red-500">Password must be same.</p>
             )}
+            {/* Terms Agreement, Required but no validation */}
             <div className="mt-2">
               <input
                 type="checkbox"
@@ -207,6 +223,7 @@ const Register = () => {
             >
               {isLoading ? <Loader /> : 'Sign Up'}
             </button>
+            {/* Login */}
             <div className=" flex text-sm">
               <p>Already have an account?&nbsp;</p>
               <Link to={'/login'}>
@@ -215,7 +232,7 @@ const Register = () => {
             </div>
           </form>
         </div>
-
+        {/* Toast Notifation to show action feedbacks */}
         {registerSuccess && (
           <ToastNotification
             mode="registerSuccess"
@@ -236,18 +253,3 @@ const Register = () => {
 }
 
 export default Register
-
-// TO-DO
-/*
-2. Name Should be larger than 4 Characters - Done
-1. Email Checking - Done
-3. Passwords should be 8 or longer - Done
-4. Check two passwords - Done
-
-5. Register Account - DONE
-    5.1 Make A Register Slice - Done
-6. Show loading when registering - Done
-7. Show notification that registering is successful or not - Done
-8. If successful >> lead to Login Page. - Done
-9. If failed >> Show reason notification.
-*/

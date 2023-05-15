@@ -1,10 +1,12 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
+// Redux functions for contacts
 
 export const contact = createApi({
   reducerPath: 'contact',
   baseQuery: fetchBaseQuery({
     baseUrl: 'https://contact-app.mmsdev.site/api/v1',
   }),
+  // Tag types for auto refresh when there is changes in server
   tagTypes: ['contact'],
   endpoints: (builder) => ({
     getContacts: builder.query({
