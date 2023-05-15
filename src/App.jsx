@@ -1,5 +1,5 @@
 import React from 'react'
-import Path from './routes/path'
+import Path from './routes/Path'
 
 function App() {
   return (
