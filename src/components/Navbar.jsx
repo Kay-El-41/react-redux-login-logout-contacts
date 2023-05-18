@@ -33,9 +33,11 @@ const Navbar = () => {
     <nav className="relative flex h-16 items-center justify-between bg-blue-500 p-3 sm:p-5">
       {/* LOGO */}
       <div>
-        <h1 className="select-none text-2xl font-bold text-white drop-shadow">
-          CONTACT MANAGER
-        </h1>
+        <Link to={'/'}>
+          <h1 className="select-none text-2xl font-bold text-white drop-shadow">
+            CONTACT MANAGER
+          </h1>
+        </Link>
       </div>
 
       {/* User Profile Icon */}

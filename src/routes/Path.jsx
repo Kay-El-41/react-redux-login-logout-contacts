@@ -8,6 +8,7 @@ import RouteGuard from '../pages/RouteGuard'
 import ContactProfile from '../pages/ContactProfile'
 import EditContact from '../pages/EditContact'
 import AddContact from '../pages/AddContact'
+import ErrorPage from '../pages/ErrorPage'
 
 const Path = () => {
   return (
@@ -21,6 +22,7 @@ const Path = () => {
         }
       />
       <Route path="/login" element={<Login />} />
+      <Route path="/*" element={<ErrorPage />} />
       <Route path="/register" element={<Register />} />
       <Route path="/profile" element={<UserProfile />} />
       <Route path="/contact/:id" element={<ContactProfile />} />
